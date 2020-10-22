@@ -18,12 +18,12 @@ fontsize: 11pt
 Input: _Aggregated_Reps_Wifi.csv_
 Factors (Perfume.js metrics):
 1. __headerSize__ - size of the header
-2. __timeToFirstByte__ - The amount of time ittakes for the server to send the first payload to the client
-3. __downloadTime__ - Response time only (download)
-4. __totalTime__ - Request plus response time (network only)
-5. __totalLoadTime__ - 
-6. __fcp__ - The time from when thepage starts loading to when the first bit of meaningful content is rendered
-7. __fp__ - The exact time taken for the browser to render anything as visually different from what was on the screen before navigation
+2. __timeToFirstByte__ (ms) -  Time to First Byte (TTFB) - The amount of time ittakes for the server to send the first payload to the client
+3. __downloadTime__ - Download Time (ms) - Response time only (download)
+4. __totalTime__ - Total time (ms) - Request plus response time (network only)
+5. __totalLoadTime__ (ms) - The time taken for the entire page to be loaded (the time taken until the onload callback is called)
+6.  __fcp__ - First Contentful Paint (ms) - The time from when thepage starts loading to when the first bit of meaningful content is rendered
+7. __fp__ - First Paint (ms) - The exact time taken for the browser to render anything as visually different from what was on the screen before navigation
 Blocking factor: 
 __network conditions__- Wifi
 
@@ -182,11 +182,11 @@ wifi_load_df = wifi_load_df[keeps]
 
 Save transformed data for navigation timing:
 ```{r}
-write.csv(wifi_navigation_df,"NavigationTiming.csv", row.names = TRUE)
+write.csv(wifi_navigation_df,"NavigationTiming_Wifi.csv", row.names = TRUE)
 ```
 
 Save transformed data for load speed:
 ```{r}
-write.csv(wifi_load_df,"LoadSpeed.csv", row.names = TRUE)
+write.csv(wifi_load_df,"LoadSpeed_Wifi.csv", row.names = TRUE)
 ```
 
