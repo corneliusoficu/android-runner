@@ -1,0 +1,2 @@
+fetchTime,dnsLookupTime,timeToFirstByte,totalTime,headerSize,workerTime,totalLoadTime,downloadTime
+379.1,0,146.4,316.8,392,0,1583,170.4

@@ -1,0 +1,70 @@
+{
+    "paths": [
+        "http://192.168.100.103:9191/local_websites/www.hao123.com",
+        "http://192.168.100.103:9191/local_websites/www.w3schools.com",
+        "http://192.168.100.103:9191/local_websites/www.oliveogrill.com",
+        "http://192.168.100.103:9191/local_websites/www.ria.ru",
+        "http://192.168.100.103:9191/local_websites/www.dailymail.co.uk",
+        "http://192.168.100.103:9191/local_websites/www.xiaomi.com",
+        "http://192.168.100.103:9191/local_websites/www.scoverage.org",
+        "http://192.168.100.103:9191/local_websites/www.bankofamerica.com",
+        "http://192.168.100.103:9191/local_websites/www.wordpress.com",
+        "http://192.168.100.103:9191/local_websites/www.rednet.cn",
+        "http://192.168.100.103:9191/local_websites/www.wp.me",
+        "http://192.168.100.103:9191/local_websites/www.elsevier.com",
+        "http://192.168.100.103:9191/local_websites/www.aliyun.com",
+        "http://192.168.100.103:9191/local_websites/www.herokuapp.com",
+        "http://192.168.100.103:9191/local_websites/www.foursquare.com",
+        "http://192.168.100.103:9191/local_websites/www.meetup.com",
+        "http://192.168.100.103:9191/local_websites/www.techcrunch.com",
+        "http://192.168.100.103:9191/local_websites/www.patreon.com",
+        "http://192.168.100.103:9191/local_websites/www.w3.org",
+        "http://192.168.100.103:9191/local_websites/www.idntimes.com",
+        "http://192.168.100.103:9191/local_websites/www.g.page",
+        "http://192.168.100.103:9191/local_websites/www.automattic.com",
+        "http://192.168.100.103:9191/local_websites/www.fandom.com",
+        "http://192.168.100.103:9191/local_websites/www.bitly.com",
+        "http://192.168.100.103:9191/local_websites/www.aaplimg.com",
+        "http://192.168.100.103:9191/local_websites/www.afternic.com",
+        "http://192.168.100.103:9191/local_websites/www.reverso.net",
+        "http://192.168.100.103:9191/local_websites/www.archive.org",
+        "http://192.168.100.103:9191/local_websites/www.theverge.com",
+        "http://192.168.100.103:9191/local_websites/www.gotowebinar.com"
+    ],
+    "systrace_path": "/home/corneliu/Android/Sdk/platform-tools/systrace/systrace.py",
+    "scripts": {
+        "after_launch": "Scripts/after_launch.py",
+        "after_run": "Scripts/after_run.py"
+    },
+    "powerprofile_path": "power_profiles/power_profile_nexus5x.xml",
+    "profilers": {
+        "batterystats": {
+            "cleanup": true
+        },
+        "perfume_js": {
+            "metrics": [
+                "fp",
+                "fcp",
+                "storageEstimate",
+                "navigationTiming",
+                "networkInformation",
+                "fid",
+                "lcp",
+                "cls",
+                "tbt"
+            ]
+        }
+    },
+    "time_between_run": 120000,
+    "repetitions": 1,
+    "duration": 20000,
+    "monkeyrunner_path": "/home/user/Android/Sdk/tools/bin/monkeyrunner",
+    "devices": {
+        "nexus5x": {}
+    },
+    "browsers": [
+        "chrome"
+    ],
+    "type": "web",
+    "clear_cache": true
+}

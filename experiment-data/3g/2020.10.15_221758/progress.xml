@@ -1,0 +1,187 @@
+<experiment>
+  <configHash>a74336331f63facd3c202960e2deace8</configHash>
+  <outputDir>/home/corneliu/Green_Lab/VU-green-it/android-runner/examples/perfume_trepn/output/2020.10.15_221758/</outputDir>
+  <runsToRun/>
+  <runsDone>
+    <run runId="28">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.zillow.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="13">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.meetup.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="7">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.wordpress.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="4">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.dailymail.co.uk</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="11">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.herokuapp.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="24">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.reverso.net</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="3">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.ria.ru</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="1">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.w3schools.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="5">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.scoverage.org</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="0">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.hao123.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="6">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.bankofamerica.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="17">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.idntimes.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="16">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.w3.org</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="20">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.fandom.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="22">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.aaplimg.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="29">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.github.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="15">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.patreon.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="2">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.oliveogrill.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="21">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.bitly.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="19">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.automattic.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="27">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.gotowebinar.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="26">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.theverge.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="8">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.wp.me</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="14">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.techcrunch.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="10">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.aliyun.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="25">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.archive.org</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="9">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.elsevier.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="18">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.g.page</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="12">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.foursquare.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+    <run runId="23">
+      <device>nexus5x</device>
+      <path>http://192.168.100.103:9191/local_websites/www.afternic.com</path>
+      <browser>chrome</browser>
+      <runCount>1</runCount>
+    </run>
+  </runsDone>
+</experiment>

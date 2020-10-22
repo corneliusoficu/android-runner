@@ -1,0 +1,74 @@
+{
+    "powerprofile_path": "power_profiles/power_profile_nexus5x.xml",
+    "duration": 20000,
+    "devices": {
+        "nexus5x": {}
+    },
+    "systrace_path": "/home/corneliu/Android/Sdk/platform-tools/systrace/systrace.py",
+    "randomization": true,
+    "profilers": {
+        "perfume_js": {
+            "metrics": [
+                "fp",
+                "fcp",
+                "storageEstimate",
+                "navigationTiming",
+                "networkInformation",
+                "fid",
+                "lcp",
+                "cls",
+                "tbt"
+            ]
+        },
+        "batterystats": {
+            "cleanup": true
+        }
+    },
+    "time_between_run": 120000,
+    "scripts": {
+        "after_run": "Scripts/after_run.py",
+        "before_experiment": "Scripts/before_experiment.py",
+        "after_launch": "Scripts/after_launch.py",
+        "after_experiment": "Scripts/after_experiment.py"
+    },
+    "type": "web",
+    "monkeyrunner_path": "/home/user/Android/Sdk/tools/bin/monkeyrunner",
+    "paths": [
+        "http://192.168.100.103:9191/local_websites/www.hao123.com",
+        "http://192.168.100.103:9191/local_websites/www.w3schools.com",
+        "http://192.168.100.103:9191/local_websites/www.oliveogrill.com",
+        "http://192.168.100.103:9191/local_websites/www.ria.ru",
+        "http://192.168.100.103:9191/local_websites/www.dailymail.co.uk",
+        "http://192.168.100.103:9191/local_websites/www.scoverage.org",
+        "http://192.168.100.103:9191/local_websites/www.bankofamerica.com",
+        "http://192.168.100.103:9191/local_websites/www.wordpress.com",
+        "http://192.168.100.103:9191/local_websites/www.wp.me",
+        "http://192.168.100.103:9191/local_websites/www.elsevier.com",
+        "http://192.168.100.103:9191/local_websites/www.aliyun.com",
+        "http://192.168.100.103:9191/local_websites/www.herokuapp.com",
+        "http://192.168.100.103:9191/local_websites/www.foursquare.com",
+        "http://192.168.100.103:9191/local_websites/www.meetup.com",
+        "http://192.168.100.103:9191/local_websites/www.techcrunch.com",
+        "http://192.168.100.103:9191/local_websites/www.patreon.com",
+        "http://192.168.100.103:9191/local_websites/www.w3.org",
+        "http://192.168.100.103:9191/local_websites/www.idntimes.com",
+        "http://192.168.100.103:9191/local_websites/www.g.page",
+        "http://192.168.100.103:9191/local_websites/www.automattic.com",
+        "http://192.168.100.103:9191/local_websites/www.fandom.com",
+        "http://192.168.100.103:9191/local_websites/www.bitly.com",
+        "http://192.168.100.103:9191/local_websites/www.aaplimg.com",
+        "http://192.168.100.103:9191/local_websites/www.afternic.com",
+        "http://192.168.100.103:9191/local_websites/www.reverso.net",
+        "http://192.168.100.103:9191/local_websites/www.archive.org",
+        "http://192.168.100.103:9191/local_websites/www.theverge.com",
+        "http://192.168.100.103:9191/local_websites/www.gotowebinar.com",
+        "http://192.168.100.103:9191/local_websites/www.zillow.com",
+        "http://192.168.100.103:9191/local_websites/www.github.com"
+    ],
+    "clear_cache": true,
+    "browsers": [
+        "chrome"
+    ],
+    "repetitions": 1,
+    "three_g": true
+}

@@ -1,0 +1,37 @@
+{
+  "type": "web",
+  "devices": {
+    "nexus5x": {}
+  },
+  "repetitions": 1,
+  "duration": 5000,
+  "browsers": ["firefox"],
+  "monkeyrunner_path": "/home/user/Android/Sdk/tools/bin/monkeyrunner",
+  "systrace_path": "/home/corneliu/Android/Sdk/platform-tools/systrace/systrace.py",
+  "powerprofile_path": "power_profiles/power_profile_nexus5x.xml",
+  "paths": [
+    "https://www.google.com"
+  ],
+  "profilers": {
+    "batterystats": {
+      "cleanup": true
+    }
+  },
+  "scripts": {
+    "before_experiment": "Scripts/before_experiment.py",
+    "before_run": "Scripts/before_run.py",
+    "after_launch": "Scripts/after_launch.py",
+    "interaction": [
+      {
+        "type": "python3",
+        "path": "Scripts/interaction.py",
+        "timeout": 500,
+        "logcat_regex": "some keyword"
+      }
+    ],
+    "before_close": "Scripts/before_close.py",
+    "after_run": "Scripts/after_run.py",
+    "after_experiment": "Scripts/after_experiment.py"
+  },
+  "time_between_run": 2000
+}
