@@ -1,49 +1,55 @@
 ---
-title: "Data Exploration"
-author: "Madalina Dinga"
+title: "Data Transformation Wifi"
+author: "____________________"
 date: "10/20/2020"
 output:
-  pdf_document:
-    fig_caption: yes
-  word_document: default
-highlight: tango
-fontsize: 11pt
+  html_document
 ---
 
 
 ```{r}
-#options(digits = 3)
+options(digits = 3, warn = -1)
 ```
 
 Input: _Aggregated_Reps_Wifi.csv_
+
 Factors (Perfume.js metrics):
+
 1. __headerSize__ - size of the header
+
 2. __timeToFirstByte__ (ms) -  Time to First Byte (TTFB) - The amount of time ittakes for the server to send the first payload to the client
+
 3. __downloadTime__ - Download Time (ms) - Response time only (download)
+
 4. __totalTime__ - Total time (ms) - Request plus response time (network only)
+
 5. __totalLoadTime__ (ms) - The time taken for the entire page to be loaded (the time taken until the onload callback is called)
-6.  __fcp__ - First Contentful Paint (ms) - The time from when thepage starts loading to when the first bit of meaningful content is rendered
+
+6.  __fcp__ - First Contentful Paint (ms) - The time from when the page starts loading to when the first bit of meaningful content is rendered
+
 7. __fp__ - First Paint (ms) - The exact time taken for the browser to render anything as visually different from what was on the screen before navigation
-Blocking factor: 
-__network conditions__- Wifi
 
 Numerical outcome (dependent variable):
+
 __batterystats_Joule_calculated__ - energy efficiency measured with battery stats (Joules)
 
 Read the data:
 ```{r}
 library(tidyverse)
 
-wifi_df = read_csv("../experiment-data/wifi/Aggregated_Reps_Wifi.csv", col_names = TRUE)
+read_data <- function(file_path) {
+  wifi_df = read_csv(file_path, col_names = TRUE)
 
-#Keep only the relevant columns
-keeps <- c("subject","headerSize", "fetchTime", "timeToFirstByte", "downloadTime", "totalTime", "totalLoadTime", "fcp", "fp", "batterystats_Joule_calculated")
-wifi_df = wifi_df[keeps]
+  #Keep only the relevant columns
+  keeps <- c("subject","headerSize", "fetchTime", "timeToFirstByte", "downloadTime", "totalTime", "totalLoadTime", "fcp", "fp", "batterystats_Joule_calculated")
+  wifi_df = wifi_df[keeps]
+}
 
+wifi_df = read_data("../experiment-data/wifi/Aggregated_Reps_Wifi_cor.csv")
 #Count of rows and columns
 dim(wifi_df)
 #View top rows of the dataset
-head(wifi_df)
+View(wifi_df)
 ```
 
 Aggregate runs for each subject (obtain 1 row per subject)
@@ -73,14 +79,12 @@ while (i<=330){
   
   i = i+11
   
- avgRun = data.frame(subj, fetchTimeAvg, headerSizeAvg, timeToFirstByteAvg, totalTimeAvg, downloadTimeAvg, totalLoadTimeAvg, fcpAvg, fpAvg, batteryStatsAvg)
+  avgRun = data.frame(subj, fetchTimeAvg, headerSizeAvg, timeToFirstByteAvg, totalTimeAvg, downloadTimeAvg, totalLoadTimeAvg, fcpAvg, fpAvg, batteryStatsAvg)
   names(avgRun) = c("subject", "fetchTimeAvg", "headerSizeAvg", "timeToFirstByteAvg", "totalTimeAvg", "downloadTimeAvg", "totalLoadTimeAvg", "fcpAvg", "fpAvg", "batteryStatsAvg")  
   wifi_df_aggregated = rbind(wifi_df_aggregated, avgRun)
 }
 
 dim(wifi_df_aggregated)
-head(wifi_df_aggregated)
-
 ```
 
 
@@ -107,7 +111,6 @@ fpNormalized = as.vector(unlist(lapply(wifi_df_aggregated['fpAvg'], normalize)))
 
 Add normalized columns to wifi_df_aggregated
 ```{r}
-dim(wifi_df_aggregated)
 wifi_df_aggregated$headerSizeNormalized = headerSizeNormalized
 wifi_df_aggregated$fetchTimeNormalized = fetchTimeNormalized
 wifi_df_aggregated$timeToFirstByteNormalized = timeToFirstByteNormalized
@@ -117,7 +120,6 @@ wifi_df_aggregated$totalLoadTimeNormalized = totalLoadTimeNormalized
 wifi_df_aggregated$fcpNormalized = fcpNormalized
 wifi_df_aggregated$fpNormalized = fpNormalized
 dim(wifi_df_aggregated)
-head(wifi_df_aggregated)
 ```
 
 Obtain a composed performance score for each of the categories (navigation timing and load speed), by computing an average of the associated metrics.
@@ -130,7 +132,6 @@ Consider __headerSize__, __fetchTime__, __timeToFirstByte__, __downloadTime__, _
 Consider __fp__, __fcp__, __totalLoadTime__ for load speed.
 ```{r}
 wifi_df_aggregated$loadMean <- rowMeans(wifi_df_aggregated[,c('fpNormalized', 'fcpNormalized', 'totalLoadTimeNormalized')], na.rm=TRUE)
-head(wifi_df_aggregated)
 ```
 
 
@@ -141,14 +142,12 @@ Sort __wifi_df__ by average navigation timing __navigationMean__.
 ```{r}
 library(dplyr)
 wifi_navigation_df = arrange(wifi_df_aggregated, navigationMean)
-head(wifi_navigation_df)
 ```
 
 Sort __wifi_df__ by load speed average __loadMean__.
 
 ```{r}
 wifi_load_df = arrange(wifi_df_aggregated, loadMean)
-head(wifi_load_df)
 ```
 
 Append low/average/high performance levels (ordinal measure).
@@ -173,11 +172,26 @@ wifi_load_df = cbind(wifi_load_df, data.frame(performanceLvl, stringsAsFactors=F
 
 Clean dfs, only keep relevant columns
 ```{r}
-keeps <- c("subject", "navigationMean","headerSizeAvg", "timeToFirstByteAvg", "fetchTimeAvg", "downloadTimeAvg", "totalTimeAvg", "navigationMean","headerSizeNormalized", "timeToFirstByteNormalized", "fetchTimeNormalized", "downloadTimeNormalized", "totalTimeNormalized", "batteryStatsAvg")
+keeps <- c("subject", "navigationMean","headerSizeAvg", "timeToFirstByteAvg", "fetchTimeAvg", "downloadTimeAvg", "totalTimeAvg", "navigationMean","headerSizeNormalized", "timeToFirstByteNormalized", "fetchTimeNormalized", "downloadTimeNormalized", "totalTimeNormalized", "batteryStatsAvg", "performanceLvl")
 wifi_navigation_df = wifi_navigation_df[keeps]
 
-keeps <- c("subject", "totalLoadTimeAvg", "fcpAvg", "fpAvg", "totalLoadTimeNormalized", "fcpNormalized", "fpNormalized", "loadMean", "batteryStatsAvg")
+keeps <- c("subject", "totalLoadTimeAvg", "fcpAvg", "fpAvg", "totalLoadTimeNormalized", "fcpNormalized", "fpNormalized", "loadMean", "batteryStatsAvg", "performanceLvl")
 wifi_load_df = wifi_load_df[keeps]
+```
+
+Create new __website__ column with shortened names.
+```{r}
+shorten_webpage_name <- function(fullName){
+  name <- strsplit(as.character(fullName), '[-]')
+  shortName <- paste(name[[1]][8], name[[1]][9], name[[1]][10], sep=".")
+  return(shortName)
+}
+
+for (i in 1:length(wifi_navigation_df$subject)) {
+  subject = wifi_navigation_df$subject[i]
+  wifi_navigation_df$website[i] = shorten_webpage_name(subject)
+  wifi_load_df$website[i] = shorten_webpage_name(subject)
+}
 ```
 
 Save transformed data for navigation timing:
@@ -189,4 +203,6 @@ Save transformed data for load speed:
 ```{r}
 write.csv(wifi_load_df,"LoadSpeed_Wifi.csv", row.names = TRUE)
 ```
+
+
 
