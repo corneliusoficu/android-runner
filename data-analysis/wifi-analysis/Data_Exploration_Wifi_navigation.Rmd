@@ -185,7 +185,7 @@ skewness(batteryStatsSquared)
 There is no visible improvement. \n
 
 Shapiro-Wilk normality test: \n
-The p-value for testing H~0~ is less than 0.05, hence the null hypothesis that the data is normally distributed is rejected.\n
+The p-value for testing H~0~ is greater than 0.05, hence we cannot reject the null hypothesis that energy efficiency data is normally distributed. \n
 
 Data is negatively skewed for the reciprocal of energy efficiency.
 
@@ -211,7 +211,7 @@ skewness(batteryStatsReciprocal)
 The data visualizations look promising. \n
 
 Shapiro-Wilk normality test: \n
-The p-value for testing H~0~ is less than 0.05, hence the null hypothesis that the data is normally distributed is rejected.\n
+The p-value for testing H~0~ is greater than 0.05, hence we cannot reject the null hypothesis that energy efficiency data is normally distributed. \n
 
 In this case, there is an improvement in skewness, but we cannot assume a normal distribution according to the results of the Shapiro-Wilk test.
 
@@ -233,8 +233,8 @@ shapiro.test(batteryStatsLog)
 skewness(batteryStatsLog)
 ```
 
-**As a result, we consider the raw energy efficiency when performing statistical tests to test the hypothesis. We can perform parametric tests in this case, taking into account the observations and the results of the Shapiro-Wilk test in regards to normality. In terms of skewness, we consider 0.65 as acceptable for the data being normally distributed.** \n
- 
+**As a result, we consider the reciprocal of energy efficiency when performing statistical tests to test the hypothesis. We perform parametric tests in this case, taking into account the observations and the results of the Shapiro-Wilk test in regards to normality. In terms of skewness, we consider -0.22 as acceptable for the data being normally distributed.** \n
+
 # Hypothesis testing
 
 $H_{0}: \mu1_{high} = \mu1_{average} = \mu1_{low}$ \n
@@ -257,7 +257,7 @@ We have one factor, >2 treatments, hence we perform Analysis of Variance (ANOVA)
 
 ```{r}
 # quantitative variable, representing the average power consumed in each round of the experiment
-efficiency = as.numeric(nav_df$batteryStatsAvg)
+efficiency = as.numeric(batteryStatsReciprocal)
 # the treatment, categorical variable with 3 levels - high, average, low
 performance = as.factor(nav_df$performanceLvl)  
 summary(efficiency) # obtain a numeric summary

@@ -44,15 +44,15 @@ __batteryStatsAvg__ - Mean energy efficiency measured with battery stats (Joules
 The __loadMean__ (the aggregated performance score from the perspective of load timing) is an average score of the normalized load speed metrics (i.e., fp, fcp, totalLoadTime).
 
 ```{r}
-nav_df =  read_csv("./LoadSpeed_Wifi.csv", col_names = TRUE)
-nav_df = select(nav_df, -c(X1))
+load_df =  read_csv("./LoadSpeed_Wifi.csv", col_names = TRUE)
+load_df = select(load_df, -c(X1))
 
-View(nav_df)
+View(load_df)
 ```
 
 Summary of energy efficiency:
 ```{r}
-summary(nav_df$batteryStatsAvg)
+summary(load_df$batteryStatsAvg)
 ```
 
 # Exploring the data
@@ -60,7 +60,7 @@ summary(nav_df$batteryStatsAvg)
 **Performance Levels vs Energy Efficiency Scatter Plot**
 
 ```{r}
-ggplot(data.frame(y = nav_df$batteryStatsAvg), aes(x = nav_df$performanceLvl, y = y, sample = y, color = nav_df$performanceLvl)) +
+ggplot(data.frame(y = load_df$batteryStatsAvg), aes(x = load_df$performanceLvl, y = y, sample = y, color = load_df$performanceLvl)) +
   labs(title="Performance Level vs Energy Efficiency Scatter Plot", x="Performance Level",  y = "Energy Efficiency (Joules)", color = "Performance Level")+
   geom_point() 
 ```
@@ -68,14 +68,14 @@ ggplot(data.frame(y = nav_df$batteryStatsAvg), aes(x = nav_df$performanceLvl, y 
 **Performance score vs Energy Efficiency Scatter Plot**
 
 ```{r}
-ggplot(data.frame(y = nav_df$batteryStatsAvg), aes(x = nav_df$loadMean, y=y, sample = y, color = nav_df$performanceLvl)) +
+ggplot(data.frame(y = load_df$batteryStatsAvg), aes(x = load_df$loadMean, y=y, sample = y, color = load_df$performanceLvl)) +
   labs(title="Performance Level vs Energy Efficiency", x="Performance Score",  y = "Energy Efficiency (Joules)", color = "Performance Level")+
   geom_point()
 ```
 
 **Box plot: Energy Efficiency vs Performance Level**
 ```{r}
-ggplot(data.frame(y = nav_df$batteryStatsAvg), aes(x = rev(nav_df$performanceLvl), y=y, sample = y, fill = (nav_df$performanceLvl))) +
+ggplot(data.frame(y = load_df$batteryStatsAvg), aes(x = rev(load_df$performanceLvl), y=y, sample = y, fill = (load_df$performanceLvl))) +
   labs(title="Boxplot: Energy Efficiency Values per Performance Level", x="Performance Level",  y = "Energy Efficiency (Joules)", fill = "Performance Level")+
   geom_boxplot() + scale_x_discrete(breaks=c("high", "average", "low"), 
                                     labels=c("low", "average", "high"))
@@ -84,155 +84,20 @@ ggplot(data.frame(y = nav_df$batteryStatsAvg), aes(x = rev(nav_df$performanceLvl
 **Box Plot: Website vs Energy Efficiency**
 
 ```{r}
-ggplot(data.frame(y = nav_df$batteryStatsAvg), aes(x = nav_df$website, y=y, sample = y, fill = nav_df$performanceLvl)) +
+ggplot(data.frame(y = load_df$batteryStatsAvg), aes(x = load_df$website, y=y, sample = y, fill = load_df$performanceLvl)) +
   theme(axis.text.x = element_text(angle= -75, hjust = 0, size = 11))+
   labs(title="Boxplot: Energy Efficiency Values per Website", x="Websitep",  y = "Energy Efficiency (Joules)", fill = "Performance Level")+
-  geom_boxplot() + scale_x_discrete(limits= rev(levels(nav_df$website)))
+  geom_boxplot() + scale_x_discrete(limits= rev(levels(load_df$website)))
 ```
 
 # Investigating the normality of the dependent variable
 
-## Raw energy efficiency
-
-We analyse the fit of the sample energy efficiency to the normal distribution. \n
-
-**Visualize using histogram and QQ-plot:**
-
-```{r, fig.width=4,fig.height=3,collapse=TRUE}
-histoRaw <-qplot(nav_df$batteryStatsAvg, geom="histogram", main="Histogram for Energy Efficiency", xlab = "Energy Efficiency (Joules)", ylab = "density", col = I("White"), binwidth=1)
-qqplotRaw <-ggplot(data.frame(y = nav_df$batteryStatsAvg), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Energy Efficiency Sample Qantile (Joules)") + xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot: Energy Efficiency")
-
-grid.arrange(histoRaw, ncol=1)
-grid.arrange(qqplotRaw, ncol=1)
-```
-
-The **histogram** clearly shows the shape and the spread of the distributions of the data. However, it is more difficult/reliable to assesing normality for smaller sample sizes, such as ours (with 30 observations). This happens because the appearance of the histogram relies on the number of data points (observations) and the number of bars in the plot. As a result, other assessment methods, such as QQ-plots or box plots can offer a better insight regarding the normality of the data. \n
-
-However, by looking at the histogram, energy efficiency does not seem to fit the normal distribution. \n
-
-The **QQ-plot** shows all of the observations against a standard normal distribution (with mean 0 and standard deviation 1) and the same number of points. In other words, the actual values of X against the theoretical values of X under the normal distribution are represented in this plot. If the points fall right on the line when normality has been met.\n
-
-The QQ-plot shows some fluctuations of the data in the tail, at the extreme ends. However, we can say that the data is not far from normality, but given the small sample size (only 30 observations), it is difficult to draw conclusions about it.
-
-**Shapiro-Wilk normality test**
-
-This test is suitable for small sample sizes (< 50 samples).
-
-_Hypothesis:_ \n
-
-H~0~: energy efficiency data is normally distributed \n
-
-H~1~: energy efficiency data is NOT normally distributed
+We already know the dependent variable, i.e., energy efficiency is normal. This has already been analyzed in Data_transformation_Wifi.Rmd, where we considered the reciprocal of the energy efficiency, as this was the least skewed distribution.
 
 ```{r}
-shapiro.test(nav_df$batteryStatsAvg)
+batteryStatsReciprocal <- 1 / load_df$batteryStatsAvg
 ```
 
-_Outcome:_
-The p-value for testing H~0~ is greater than 0.05, hence we cannot reject the null hypothesis that energy efficiency data is normally distributed.
-
-**Skewness**
-
-```{r, fig.width=4,fig.height=3,collapse=TRUE}
-boxplot(nav_df$batteryStatsAvg,names=c("Nav Mean"))
-```
-
-The box plot shows that the data is potentially right-skewed. This may be due to the small number of measurements (30 observations).
-
-**Test for skewness**
-
-```{r}
-skewness(nav_df$batteryStatsAvg)
-```
-
-The coefficient of skewness is greater than 0 i.e. $\gamma_{1} = 0.654 > 0$, hence data is positively skewed, with the majority of data values less than the mean 43.3. This means most of the values are concentrated on the left side of the graph. \n
-
-Attempting to fix skewness: \n
-```{r}
-batteryStatsSquared = nav_df$batteryStatsAvg ^ 2
-```
-
-## Square of the energy efficiency
-
-There is no visible improvement. \n
-
-Shapiro-Wilk normality test: \n
-The p-value for testing H~0~ is less than 0.05, hence the null hypothesis that the data is normally distributed is rejected.\n
-
-There is no improvement in the skewness, it is bigger than for raw values when considering the square of the data.
-
-```{r}
-histLog <- qplot(batteryStatsSquared, geom="histogram", main="Histogram for the Square of the Energy Efficiency ", xlab = "Square of Energy Efficiency Ln(Joules)", ylab = "Density", col=I("White"))
-qqplotLog <- ggplot(data.frame(y = batteryStatsSquared), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Energy Efficiency Sample Quantile Ln(Joules )") + 
-xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot: Square of the Energy Efficiency Values")
-
-grid.arrange(histLog, qqplotLog, ncol=2)
-
-# Test the data for normality of the square
-# Shapiro-Wilk normality test
-shapiro.test(batteryStatsSquared)
-
-# Test for skewness -- Higher than for raw energy efficiency, positively skewed
-skewness(batteryStatsSquared)
-```
-
-## Reciprocal of energy efficiency
-
-There is no visible improvement. \n
-
-Shapiro-Wilk normality test: \n
-The p-value for testing H~0~ is greater than 0.05, hence we cannot reject the null hypothesis that energy efficiency data is normally distributed. \n
-
-There is an improvement in data skewness for the reciprocal of energy efficiency, in comparison to raw values. Data is negatively skewed in this case.
-
-```{r}
-batteryStatsReciprocal <- 1/ nav_df$batteryStatsAvg
-
-# Visualize the reciprocal of the data -- No major improvement
-histLog <- qplot(batteryStatsReciprocal, geom="histogram", main="Histogram for the Reciprocal of the Energy Efficiency ", xlab = "Reciprocal of Energy Efficiency (1/Joules)", ylab = "Density", col=I("White"))
-qqplotLog <- ggplot(data.frame(y = batteryStatsReciprocal), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Energy Efficiency Sample Quantile (1/Joules )") + 
-xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot: Reciprocal of the Energy Efficiency Values")
-
-grid.arrange(histLog, qqplotLog, ncol=2)
-
-# Test the data for normality of the reciprocal
-# Shapiro-Wilk normality test
-shapiro.test(batteryStatsReciprocal)
-
-# Test for skewness -- Higher than for raw energy efficiency, negatively skewed
-skewness(batteryStatsReciprocal)
-```
-
-## Log of energy efficiency
-The data visualizations look promising. \n
-
-Shapiro-Wilk normality test: \n
-The p-value for testing H~0~ is greater than 0.05, hence we cannot reject the null hypothesis that energy efficiency data is normally distributed. \n
-
-In this case, there is an improvement in skewness, but we cannot assume a normal distribution according to the results of the Shapiro-Wilk test.
-
-Data is positively skewed in this case. There is an improvement in data skewness for the log of energy efficiency, in comparison to raw values. However, the reciprocal of energy efficiency is less skewed.
-
-```{r}
-batteryStatsLog <- log(nav_df$batteryStatsAvg)
-
-# Visualize the log of the data -- Promising
-histLog <- qplot(batteryStatsLog, geom="histogram", main="Histogram for the Log of the Energy Efficiency ", xlab = "Log of Energy Efficiency (Joules ^ 2)", ylab = "Density", col=I("White"))
-qqplotLog <- ggplot(data.frame(y = batteryStatsLog), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Energy Efficiency Sample Quantile (Joules ^ 2)") + 
-xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot: Log of the Energy Efficiency Values")
-
-grid.arrange(histLog, qqplotLog, ncol=2)
-
-# Test the data for normality of the log
-# Shapiro-Wilk normality test
-shapiro.test(batteryStatsLog)
-
-# Test for skewness -- Substantially lower but still skewed
-skewness(batteryStatsLog)
-```
-
-**As a result, we consider the reciprocal of energy efficiency when performing statistical tests to test the hypothesis. We perform parametric tests in this case, taking into account the observations and the results of the Shapiro-Wilk test in regards to normality. In terms of skewness, we consider -0.22 as acceptable for the data being normally distributed.** \n
- 
 # Hypothesis testing
 
 $H_{0}: \mu1_{high} = \mu1_{average} = \mu1_{low}$ \n
@@ -257,14 +122,14 @@ We have one factor, >2 treatments, hence we perform Analysis of Variance (ANOVA)
 # quantitative variable, representing the average power consumed in each round of the experiment
 efficiency = as.numeric(batteryStatsReciprocal)
 # the treatment, categorical variable with 3 levels - high, average, low
-performance = as.factor(nav_df$performanceLvl)
+performance = as.factor(load_df$performanceLvl)
 summary(efficiency) # obtain a numeric summary
 summary(performance) # listed as categorical variable, with the number of observations at each level
 ```
 
 ```{r}
-nav_df.aov <- aov(efficiency~performance, data = nav_df)
-summary(nav_df.aov)
+load_df.aov <- aov(efficiency~performance, data = load_df)
+summary(load_df.aov)
 ```
 _Outcome:_
 The case factor is giving a p-value higher than 0.05, meaning that we cannot reject the null hypothesis, stating that the mean energy efficiency does not significantly differ among web apps having different load speed levels. Hence, there is no statistical significance between the variables.
@@ -274,7 +139,7 @@ The case factor is giving a p-value higher than 0.05, meaning that we cannot rej
 **QQ-plot**
 
 ```{r}
-ggplot(data.frame(y = residuals(nav_df.aov)), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Sample Qantiles") + xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot of the residuals")
+ggplot(data.frame(y = residuals(load_df.aov)), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Sample Qantiles") + xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot of the residuals")
 ```
 
 **Shapiro-Wilk normality test**
@@ -286,7 +151,7 @@ H~0~: energy efficiency data is normally distributed \n
 H~1~: energy efficiency data is NOT normally distributed
 
 ```{r}
-shapiro.test(residuals(nav_df.aov))
+shapiro.test(residuals(load_df.aov))
 ```
 
 _Outcome:_
@@ -305,7 +170,7 @@ H~0~: the population variances are equal \n
 H~1~: the population variances are NOT equal
 
 ```{r}
-leveneTest(efficiency~performance, data = nav_df)
+leveneTest(efficiency~performance, data = load_df)
 ```
 
 __Outcome:__ \n
