@@ -45,7 +45,7 @@ read_data <- function(file_path) {
   wifi_df = wifi_df[keeps]
 }
 
-wifi_df = read_data("../experiment-data/wifi/Aggregated_Reps_Wifi_cor.csv")
+wifi_df = read_data("./Aggregated_Reps_Wifi_all.csv")
 #Count of rows and columns
 dim(wifi_df)
 #View top rows of the dataset
