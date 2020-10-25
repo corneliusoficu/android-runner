@@ -1,3 +1,9 @@
+# Investigating the Correlation between Perfume.js PerformanceMetrics and Energy Efficiency of Web Applications
+
+This repository is a companion page for the paper "Investigating the Correlation between Perfume.js PerformanceMetrics and Energy Efficiency of Web Applications". The paper can be downloaded [here]().
+
+It contains all the material required to replicate our analysis, including an updated version of the [android-runner](https://github.com/S2-group/android-runner/blob/master/documentation/A_Mobile_2020.pdf) framework used for automating the execution of the experiments; [scripts](./scripts) for setting up the environment for the experiments; [data-analysis](./data-analysis) results and scripts written in R required to execute the data analysis and an [experiment-data](./experiment-data) folder containing roughly 26 hours of experiment data that we've obtained, together with data aggregation scripts.
+
 # Prerequisites for running the experiments
 
 ### 1. Operating System
