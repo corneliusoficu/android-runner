@@ -1,0 +1,185 @@
+---
+title: "Data Exploration 3G - Load Performance vs Energy Efficiency"
+author: "____________________"
+date: "10/22/2020"
+output:
+  html_document
+---
+
+```{r}
+options(digits = 3, warn = -1)
+
+# Load libraries
+library(tidyverse)
+library(e1071)
+library(ggplot2)
+library(car)
+require(gridExtra)
+```
+This sample contains **30 observations** of several load performance features, collected over **3G connection**.
+
+Factors (Perfume.js metrics):
+
+1. __fcpAvg__ - First Contentful Paint (ms) \n
+
+2. __fpAvg__ - First Paint (ms) \n
+
+3. __totalLoadTimeAvg__ (ms) -  The time taken for the entire page to be loaded (the time taken until the onload callback is called) \n
+
+4. __fcpNormalized__ - Total time (ms) - Average request plus response time (network only) \n
+
+5. __fpNormalized__ - Normalized size of the header \n
+
+6. __totalLoadTimeNormalized__ (ms) -  Time to First Byte (TTFB) - Normalized amount of time it takes for the server to send the first payload to the client \n
+
+7. __loadMean__ - Performance score from the perspective of load speed \n
+
+8. __performanceLvl__ - Ordinal performance score \n
+
+Numerical outcome (dependent variable): \n
+__batteryStatsAvg__ - Mean energy efficiency measured with battery stats (Joules) \n
+
+**All averages represent the mean of the values measured for 11 runs, for each subject.** \n
+
+The __loadMean__ (the aggregated performance score from the perspective of load timing) is an average score of the normalized load speed metrics (i.e., fp, fcp, totalLoadTime).
+
+```{r}
+threeG_df =  read_csv("./LoadSpeed_threeG.csv", col_names = TRUE)
+threeG_df = select(threeG_df, -c(X1))
+
+View(threeG_df)
+```
+
+Summary of energy efficiency:
+```{r}
+summary(threeG_df$batteryStatsAvg)
+```
+
+# Exploring the data
+
+**Performance Levels vs Energy Efficiency Scatter Plot**
+
+```{r}
+ggplot(data.frame(y = threeG_df$batteryStatsAvg), aes(x = threeG_df$performanceLvl, y = y, sample = y, color = threeG_df$performanceLvl)) +
+  labs(title="Performance Level vs Energy Efficiency Scatter Plot(3G)", x="Performance Level",  y = "Energy Efficiency (Joules)", color = "Performance Level")+
+  geom_point() 
+```
+
+**Performance score vs Energy Efficiency Scatter Plot**
+
+```{r}
+ggplot(data.frame(y = threeG_df$batteryStatsAvg), aes(x = threeG_df$loadMean, y=y, sample = y, color = threeG_df$performanceLvl)) +
+  labs(title="Performance Level vs Energy Efficiency(3G)", x="Performance Score",  y = "Energy Efficiency (Joules)", color = "Performance Level")+
+  geom_point()
+```
+
+**Box plot: Energy Efficiency vs Performance Level**
+```{r}
+ggplot(data.frame(y = threeG_df$batteryStatsAvg), aes(x = rev(threeG_df$performanceLvl), y=y, sample = y, fill = (threeG_df$performanceLvl))) +
+  labs(title="Boxplot: Energy Efficiency Values per Performance Level(3G)", x="Performance Level",  y = "Energy Efficiency (Joules)", fill = "Performance Level")+
+  geom_boxplot() + scale_x_discrete(breaks=c("high", "average", "low"), 
+                                    labels=c("low", "average", "high"))
+```
+
+**Box Plot: Website vs Energy Efficiency**
+
+```{r}
+ggplot(data.frame(y = threeG_df$batteryStatsAvg), aes(x = threeG_df$website, y=y, sample = y, fill = threeG_df$performanceLvl)) +
+  theme(axis.text.x = element_text(angle= -75, hjust = 0, size = 11))+
+  labs(title="Boxplot: Energy Efficiency Values per Website(3G)", x="Websitep",  y = "Energy Efficiency (Joules)", fill = "Performance Level")+
+  geom_boxplot() + scale_x_discrete(limits= rev(levels(threeG_df$website)))
+```
+
+# Investigating the normality of the dependent variable
+
+We already know the dependent variable, i.e., energy efficiency is normal. This has already been analyzed in Data_transformation_3G.Rmd, where we considered the reciprocal of the energy efficiency, as this was the least skewed distribution.
+
+```{r}
+batteryStatsReciprocal <- 1 / threeG_df$batteryStatsAvg
+```
+
+# Hypothesis testing
+
+$H_{0}: \mu1_{high} = \mu1_{average} = \mu1_{low}$ \n
+
+i.e.,: The mean energy efficiency does not significantly differ among web apps having different load speed levels\n
+
+$H_{a}: \mu1_{high}\neq\mu1_{average} \vee \mu1_{average}\neq\mu_{low} \vee \mu1_{low}\neq\mu_{high}$\n
+
+i.e.,: The mean energy efficiency significantly differs among web apps having different levels of load speed for at least one pair of load speed levels.\n
+
+__Test used and motivation:__
+We have one factor, >2 treatments, hence we perform Analysis of Variance (ANOVA) to test for effect of the treatments (load speed levels) on the mean energy efficiency.
+
+**One-way ANOVA** can be used in the analysis to test the effect of each performance category (i.e., load speed, load speed) on energy efficiency. In this case, we assume: \n
+  - The dependent variable (energy efficiency) is continuous - TRUE
+  - The samples are independent - TRUE (guaranteed by the experimental design)
+  - Normal distribution of the dependent variable between the independent groups - TRUE
+  - Residuals (i.e., errors in the sample) should be normally distributed - TO BE CHECKED AFTER FITTING THE MODEL
+  - Homoscedasticity (variance between groups should be the same) - TO BE CHECKED AFTER FITTING THE MODEL
+
+```{r}
+# quantitative variable, representing the average power consumed in each round of the experiment
+efficiency = as.numeric(batteryStatsReciprocal)
+# the treatment, categorical variable with 3 levels - high, average, low
+performance = as.factor(threeG_df$performanceLvl)
+summary(efficiency) # obtain a numeric summary
+summary(performance) # listed as categorical variable, with the number of observations at each level
+```
+
+```{r}
+threeG_df.aov <- aov(efficiency~performance, data = threeG_df)
+summary(threeG_df.aov)
+```
+_Outcome:_
+The case factor is giving a p-value higher than 0.05, meaning that we cannot reject the null hypothesis, stating that the mean energy efficiency does not significantly differ among web apps having different load speed levels. Hence, there is no statistical significance between the variables.
+
+**Check normality of residuals**
+
+**QQ-plot**
+
+```{r}
+ggplot(data.frame(y = residuals(threeG_df.aov)), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Sample Qantiles") + xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot of the residuals(3G)")
+```
+
+**Shapiro-Wilk normality test**
+
+_Hypothesis:_ \n
+
+H~0~: energy efficiency data is normally distributed \n
+
+H~1~: energy efficiency data is NOT normally distributed
+
+```{r}
+shapiro.test(residuals(threeG_df.aov))
+```
+
+_Outcome:_
+The p-value for testing H~0~ is greater than 0.05, hence we cannot reject the null hypothesis that energy efficiency data is normally distributed.
+
+**Check homoscedacity**
+
+The spread of the data points between the groups must be the same.
+
+**Levene's test with one independent variable**
+
+_Hypothesis:_ \n
+
+H~0~: the population variances are equal \n
+
+H~1~: the population variances are NOT equal
+
+```{r}
+leveneTest(efficiency~performance, data = threeG_df)
+```
+
+__Outcome:__ \n
+
+The p-value of Levene's test is higher than the significance level (0.05), hence the differences in sample variances are likely to have occurred based on random sampling from a population with equal variances. Thus, we cannot reject the null hypothesis of equal variances.
+
+Hence, the assumptions of ANOVA are all valid.
+
+We conclude that there is no evidence of statistical significance between performance and energy efficiency.
+
+
+
