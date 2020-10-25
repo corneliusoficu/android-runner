@@ -10,6 +10,6 @@ cd ../
 
 for i in `seq $1`; do
   echo "Executing experiment: $i"
-  python3 android-runner/ android-runner/examples/perfume_trepn/config_web.json;
+  python3 android-runner/ android-runner/examples/perfume_power/config_web.json;
 done
 
