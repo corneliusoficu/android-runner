@@ -1,0 +1,333 @@
+---
+title: "Data Exploration 3G - Navigation Performance vs Energy Efficiency"
+author: "____________________"
+date: "10/22/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+options(digits = 3, warn = -1)
+
+# Load libraries
+library(tidyverse)
+library(e1071)
+library(ggplot2)
+library(car)
+require(gridExtra)
+```
+This sample contains **30 observations** of several navigation performance features, collected over **3G connection**.
+
+Factors (Perfume.js metrics):
+
+1. __headerSizeAvg__ - Average size of the header \n
+
+2. __timeToFirstByteAvg__ (ms) -  Time to First Byte (TTFB) - Average amount of time ittakes for the server to send the first payload to the client \n
+
+3. __downloadTimeAvg__ - Download Time (ms) - Average response time only (download) \n
+
+4. __totalTimeAvg__ - Total time (ms) - Average request plus response time (network only) \n
+
+5. __headerSizeNormalized__ - Normalized size of the header \n
+
+6. __timeToFirstByteNormalized__ (ms) -  Time to First Byte (TTFB) - Normalized amount of time it takes for the server to send the first payload to the client \n
+
+7. __downloadTimeNormalized__ - Download Time (ms) - Normalized response time only (download) \n
+
+8. __totalTimeNormalized__ - Total time (ms) - Normalized request plus response time (network only) \n
+
+9. __navigationMean__ - Performance score from the perspective of navigation timing \n
+
+10. __performanceLvl__ - Ordinal performance score \n
+
+Numerical outcome (dependent variable): \n
+__batteryStatsAvg__ - Mean energy efficiency measured with battery stats (Joules) \n
+
+**All averages represent the mean of the values measured for 11 runs, for each subject.** \n
+
+The __navigationMean__ (the performance score from the perspective of navigation timing) is an average of the normalized navigation timing metrics (i.e., headerSize, timeToFirstByte, downloadTime, totalTime).
+
+```{r}
+threeG_nav_df =  read_csv("./NavigationTiming_threeG.csv", col_names = TRUE)
+threeG_nav_df = select(threeG_nav_df, -c(X1))
+
+View(threeG_nav_df)
+```
+
+Summary of energy efficiency:
+```{r}
+summary(threeG_nav_df$batteryStatsAvg)
+```
+
+# Exploring the data
+
+**Performance Levels vs Energy Efficiency Scatter Plot**
+
+```{r}
+ggplot(data.frame(y = threeG_nav_df$batteryStatsAvg), aes(x = threeG_nav_df$performanceLvl, y = y, sample = y, color = threeG_nav_df$performanceLvl)) +
+  labs(title="Performance Level vs Energy Efficiency Scatter Plot(3G)", x="Performance Level",  y = "Energy Efficiency (Joules)", color = "Performance Level")+
+  geom_point() 
+```
+
+**Performance score vs Energy Efficiency Scatter Plot**
+
+```{r}
+ggplot(data.frame(y = threeG_nav_df$batteryStatsAvg), aes(x = threeG_nav_df$navigationMean, y=y, sample = y, color = threeG_nav_df$performanceLvl)) +
+  labs(title="Performance Level vs Energy Efficiency(3G)", x="Performance Score",  y = "Energy Efficiency (Joules)", color = "Performance Level")+
+  geom_point()
+```
+
+**Box plot: Energy Efficiency vs Performance Level**
+```{r}
+ggplot(data.frame(y = threeG_nav_df$batteryStatsAvg), aes(x = rev(threeG_nav_df$performanceLvl), y=y, sample = y, fill = (threeG_nav_df$performanceLvl))) +
+  labs(title="Boxplot: Energy Efficiency Values per Performance Level(3G)", x="Performance Level",  y = "Energy Efficiency (Joules)", fill = "Performance Level")+
+  geom_boxplot() + scale_x_discrete(breaks=c("high", "average", "low"), 
+                                    labels=c("low", "average", "high"))
+```
+
+**Box Plot: Website vs Energy Efficiency**
+
+```{r}
+ggplot(data.frame(y = threeG_nav_df$batteryStatsAvg), aes(x = threeG_nav_df$website, y=y, sample = y, fill = threeG_nav_df$performanceLvl)) +
+  theme(axis.text.x = element_text(angle= -75, hjust = 0, size = 11))+
+  labs(title="Boxplot: Energy Efficiency Values per Website(3G)", x="Websitep",  y = "Energy Efficiency (Joules)", fill = "Performance Level")+
+  geom_boxplot() + scale_x_discrete(limits= rev(levels(threeG_nav_df$website)))
+```
+
+# Investigating the normality of the dependent variable
+
+## Raw energy efficiency
+
+We analyse the fit of the sample energy efficiency to the normal distribution. \n
+
+**Visualize using histogram and QQ-plot:**
+
+```{r, fig.width=4,fig.height=3,collapse=TRUE}
+histoRaw <-qplot(threeG_nav_df$batteryStatsAvg, geom="histogram", main="Histogram for Energy Efficiency(3G)", xlab = "Energy Efficiency (Joules)", ylab = "density", col = I("White"), binwidth=1)
+qqplotRaw <-ggplot(data.frame(y = threeG_nav_df$batteryStatsAvg), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Energy Efficiency Sample Qantile (Joules)") + xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot: Energy Efficiency(3G)")
+
+grid.arrange(histoRaw, ncol=1)
+grid.arrange(qqplotRaw, ncol=1)
+```
+
+The **histogram** clearly shows the shape and the spread of the distributions of the data. However, it is more difficult/reliable to assesing normality for smaller sample sizes, such as ours (with 30 observations). This happens because the appearance of the histogram relies on the number of data points (observations) and the number of bars in the plot. As a result, other assessment methods, such as QQ-plots or box plots can offer a better insight regarding the normality of the data. \n
+
+However, by looking at the histogram, energy efficiency does not seem to fit the normal distribution. \n
+
+The **QQ-plot** shows all of the observations against a standard normal distribution (with mean 0 and standard deviation 1) and the same number of points. In other words, the actual values of X against the theoretical values of X under the normal distribution are represented in this plot. If the points fall right on the line when normality has been met.\n
+
+The QQ-plot shows the whole data is fluctuate that the tail part is above the standard normal distribution, while the middle part is lower than the normal distribution. At last, we can say that the data is far from the normality. But by given the small sample size (only 30 observations), it is difficult to draw conclusions about it.
+
+**Shapiro-Wilk normality test**
+
+This test is suitable for small sample sizes (< 50 samples).
+
+_Hypothesis:_ \n
+
+H~0~: energy efficiency data is normally distributed \n
+
+H~1~: energy efficiency data is NOT normally distributed
+
+```{r}
+shapiro.test(threeG_nav_df$batteryStatsAvg)
+```
+
+_Outcome:_
+The p-value for testing H~0~ is greater than 0.05, hence we cannot reject the null hypothesis that energy efficiency data is normally distributed.
+
+**Skewness**
+
+```{r, fig.width=4,fig.height=3,collapse=TRUE}
+boxplot(threeG_nav_df$batteryStatsAvg,names=c("Nav Mean(3G)"))
+```
+
+The box plot shows that the data is potentially right-skewed. This may be due to the small number of measurements (30 observations).
+
+**Test for skewness**
+
+```{r}
+skewness(threeG_nav_df$batteryStatsAvg)
+```
+
+The coefficient of skewness is greater than 0 i.e. $\gamma_{1} = 0.303 > 0$, hence data is positively skewed, with the majority of data values less than the mean 40.9. This means most of the values are concentrated on the left side of the graph. \n
+
+Attempting to fix skewness: \n
+```{r}
+batteryStatsSquared = threeG_nav_df$batteryStatsAvg ^ 2
+```
+
+## Square of the energy efficiency
+
+There is no visible improvement. \n
+
+Shapiro-Wilk normality test: \n
+The p-value for testing H~0~ is less than 0.05, hence the null hypothesis that the data is normally distributed is rejected.\n
+
+There is no improvement in the skewness, it is bigger than for raw values when considering the square of the data.
+
+```{r}
+histLog <- qplot(batteryStatsSquared, geom="histogram", main="Histogram for the Square of the Energy Efficiency(3G)", xlab = "Square of Energy Efficiency Ln(Joules)", ylab = "Density", col=I("White"))
+qqplotLog <- ggplot(data.frame(y = batteryStatsSquared), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Energy Efficiency Sample Quantile Ln(Joules )") + 
+xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot: Square of the Energy Efficiency Values(3G)")
+
+grid.arrange(histLog, qqplotLog, ncol=2)
+
+# Test the data for normality of the square
+# Shapiro-Wilk normality test
+shapiro.test(batteryStatsSquared)
+
+# Test for skewness -- Higher than for raw energy efficiency, positively skewed
+skewness(batteryStatsSquared)
+```
+
+## Reciprocal of energy efficiency
+
+There is no visible improvement. \n
+
+Shapiro-Wilk normality test: \n
+The p-value for testing H~0~ is greater than 0.05, hence we cannot reject the null hypothesis that energy efficiency data is normally distributed. \n
+
+Data is negatively skewed for the reciprocal of energy efficiency.
+
+```{r}
+batteryStatsReciprocal <- 1/ threeG_nav_df$batteryStatsAvg
+
+# Visualize the reciprocal of the data -- No major improvement
+histLog <- qplot(batteryStatsReciprocal, geom="histogram", main="Histogram for the Reciprocal of the Energy Efficiency(3G) ", xlab = "Reciprocal of Energy Efficiency (1/Joules)", ylab = "Density", col=I("White"))
+qqplotLog <- ggplot(data.frame(y = batteryStatsReciprocal), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Energy Efficiency Sample Quantile (1/Joules )") + 
+xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot: Reciprocal of the Energy Efficiency Values(3G)")
+
+grid.arrange(histLog, qqplotLog, ncol=2)
+
+# Test the data for normality of the reciprocal
+# Shapiro-Wilk normality test
+shapiro.test(batteryStatsReciprocal)
+
+# Test for skewness -- Higher than for raw energy efficiency, negatively skewed
+skewness(batteryStatsReciprocal)
+```
+
+## Log of energy efficiency
+The data visualizations look promising. \n
+
+Shapiro-Wilk normality test: \n
+The p-value for testing H~0~ is greater than 0.05, hence we cannot reject the null hypothesis that energy efficiency data is normally distributed. \n
+
+In this case, there is an improvement in skewness, but we cannot assume a normal distribution according to the results of the Shapiro-Wilk test.
+
+```{r}
+batteryStatsLog <- log(threeG_nav_df$batteryStatsAvg)
+
+# Visualize the log of the data -- Promising
+histLog <- qplot(batteryStatsLog, geom="histogram", main="Histogram for the Log of the Energy Efficiency(3G) ", xlab = "Log of Energy Efficiency (Joules ^ 2)", ylab = "Density", col=I("White"))
+qqplotLog <- ggplot(data.frame(y = batteryStatsLog), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Energy Efficiency Sample Quantile (Joules ^ 2)") + 
+xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot: Log of the Energy Efficiency Values(3G)")
+
+grid.arrange(histLog, qqplotLog, ncol=2)
+
+# Test the data for normality of the log
+# Shapiro-Wilk normality test
+shapiro.test(batteryStatsLog)
+
+# Test for skewness -- Substantially lower but still skewed
+skewness(batteryStatsLog)
+```
+
+**As a result, we consider the reciprocal of energy efficiency when performing statistical tests to test the hypothesis. We perform parametric tests in this case, taking into account the observations and the results of the Shapiro-Wilk test in regards to normality. In terms of skewness, we consider -0.03 as acceptable for the data being normally distributed.** \n
+
+# Hypothesis testing
+
+$H_{0}: \mu1_{high} = \mu1_{average} = \mu1_{low}$ \n
+
+i.e.,: The mean energy efficiency does not significantly differ among web apps having different navigation timing levels\n
+
+$H_{a}: \mu1_{high}\neq\mu1_{average} \vee \mu1_{average}\neq\mu_{low} \vee \mu1_{low}\neq\mu_{high}$\n
+
+i.e.,: The mean energy efficiency significantly differs among web apps having different levels of navigation timing for at least one pair of navigation timing levels.\n
+
+__Test used and motivation:__
+We have one factor, >2 treatments, hence we perform Analysis of Variance (ANOVA) to test for effect of the treatments (navigation timing levels) on the mean energy efficiency.
+
+**One-way ANOVA** can be used in the analysis to test the effect of each performance category (i.e., navigation timing, load speed) on energy efficiency. In this case, we assume: \n
+  - The dependent variable (energy efficiency) is continuous - TRUE
+  - The samples are independent - TRUE (guaranteed by the experimental design)
+  - Normal distribution of the dependent variable between the independent groups - TRUE
+  - Residuals (i.e., errors in the sample) should be normally distributed - TO BE CHECKED AFTER FITTING THE MODEL
+  - Homoscedasticity (variance between groups should be the same) - TO BE CHECKED AFTER FITTING THE MODEL
+
+```{r}
+# quantitative variable, representing the average power consumed in each round of the experiment
+efficiency = as.numeric(batteryStatsReciprocal)
+# the treatment, categorical variable with 3 levels - high, average, low
+performance = as.factor(threeG_nav_df$performanceLvl)  
+summary(efficiency) # obtain a numeric summary
+summary(performance) # listed as categorical variable, with the number of observations at each level
+```
+
+```{r}
+threeG_nav_df.aov <- aov(efficiency~performance, data = threeG_nav_df)
+summary(threeG_nav_df.aov)
+```
+_Outcome:_
+The case factor is giving a p-value lower than 0.05, meaning that we can reject the null hypothesis, stating that the mean energy efficiency does not significantly differ among web apps having different navigation timing levels. Hence, there is statistical significance between the variables.
+
+
+**multiple comparison**
+From above, we can see there is some difference between groups but we don't know which group is higher or lower than other groups. To find it out, we will do the multiple comparison.
+```{r}
+TukeyHSD(threeG_nav_df.aov)
+par(las=1)
+plot(TukeyHSD(threeG_nav_df.aov))
+```
+From the result of the mutiple comparison, we can see there is some statistical significance between the group **low** and **average**, also **low** and **high**.
+
+**Check normality of residuals**
+
+**QQ-plot**
+
+```{r}
+ggplot(data.frame(y = residuals(threeG_nav_df.aov)), aes(sample = y)) + stat_qq() + stat_qq_line(col="red", lty=2) + ylab("Sample Qantiles") + xlab("Normal Theoretical Quantile") + ggtitle("Q-Q Plot of the residuals(3G)")
+```
+
+**Shapiro-Wilk normality test**
+
+_Hypothesis:_ \n
+
+H~0~: energy efficiency data is normally distributed \n
+
+H~1~: energy efficiency data is NOT normally distributed
+
+```{r}
+shapiro.test(residuals(threeG_nav_df.aov))
+```
+
+_Outcome:_
+The p-value for testing H~0~ is greater than 0.05, hence we cannot reject the null hypothesis that energy efficiency data is normally distributed.
+
+**Check homoscedacity**
+
+The spread of the data points between the groups must be the same.
+
+**Levene's test with one independent variable**
+
+_Hypothesis:_ \n
+
+H~0~: the population variances are equal \n
+
+H~1~: the population variances are NOT equal
+
+```{r}
+leveneTest(efficiency~performance, data = threeG_nav_df)
+```
+
+__Outcome:__ \n
+
+The p-value of Levene's test is higher than the significance level (0.05), hence the differences in sample variances are likely to have occurred based on random sampling from a population with equal variances. Thus, we cannot reject the null hypothesis of equal variances.
+
+Hence, the assumptions of ANOVA are all valid.
+
+We conclude that there is no evidence of statistical significance between performance and energy efficiency.
+
+
+
