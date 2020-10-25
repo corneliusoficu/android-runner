@@ -3,7 +3,7 @@ import csv, json
 RANDOMLY_SAMPLED_WEBSITES_CSV = "./RANDOMLY_SAMPLED_WEBSITES.csv"
 WEBSITES_FOLDER = "/local_websites"
 DEFAULT_WEBSERVER_HOSTNAME = "http://192.168.100.103:9191"
-DEFAULT_CONFIG_FILE_LOCATION = "../android-runner/examples/perfume_trepn/config_web_template.json"
+DEFAULT_CONFIG_FILE_LOCATION = "../android-runner/examples/perfume_power/config_web_template.json"
 
 def read_websites_from_csv(csv_file):
     with open(csv_file, "r") as input_csv:
