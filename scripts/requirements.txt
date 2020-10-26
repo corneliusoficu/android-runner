@@ -1,0 +1,4 @@
+beautifulsoup4==4.9.3
+lxml==4.6.1
+python-slugify==4.0.1
+pluginbase==1.0.0
