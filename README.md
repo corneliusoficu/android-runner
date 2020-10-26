@@ -136,5 +136,13 @@ Usage:
 
 * **-i** <ins>LOCAL_IP_ADDRESS</ins>: local ip address of your computer and port 9191, representing the websites that will be used for the experiment.
 
+# Running the experiment
 
- 
+To run the experiment, simply execute the following shell script:
+```shell script
+./execute_experiment.sh 5
+```
+
+This shell script will execute the experiment 5 times in a row.
+
+**When the script finishes, the experiment results will be available at** [android-runner/examples/perfume_power/output](./android-runner/examples/perfume_power/output)
