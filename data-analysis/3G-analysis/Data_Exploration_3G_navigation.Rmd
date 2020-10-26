@@ -74,7 +74,7 @@ ggplot(data.frame(y = threeG_nav_df$batteryStatsAvg), aes(x = threeG_nav_df$perf
 
 ```{r}
 ggplot(data.frame(y = threeG_nav_df$batteryStatsAvg), aes(x = threeG_nav_df$navigationMean, y=y, sample = y, color = threeG_nav_df$performanceLvl)) +
-  labs(title="Performance Level vs Energy Efficiency(3G)", x="Performance Score",  y = "Energy Efficiency (Joules)", color = "Performance Level")+
+  labs(title="Performance Score vs Energy Efficiency(3G)", x="Performance Score",  y = "Energy Efficiency (Joules)", color = "Performance Level")+
   geom_point()
 ```
 
@@ -272,10 +272,15 @@ summary(threeG_nav_df.aov)
 _Outcome:_
 The case factor is giving a p-value lower than 0.05, meaning that we can reject the null hypothesis, stating that the mean energy efficiency does not significantly differ among web apps having different navigation timing levels. Hence, there is statistical significance between the variables.
 
+**Homogeneity test of variance**
+```{r}
+bartlett.test(efficiency~performance, data = threeG_nav_df)
+```
+
 
 **multiple comparison**
 From above, we can see there is some difference between groups but we don't know which group is higher or lower than other groups. To find it out, we will do the multiple comparison.
-```{r}
+```{r, fig.width=9, fig.height=3, collapse=TRUE}
 TukeyHSD(threeG_nav_df.aov)
 par(las=1)
 plot(TukeyHSD(threeG_nav_df.aov))
