@@ -69,7 +69,7 @@ ggplot(data.frame(y = threeG_df$batteryStatsAvg), aes(x = threeG_df$performanceL
 
 ```{r}
 ggplot(data.frame(y = threeG_df$batteryStatsAvg), aes(x = threeG_df$loadMean, y=y, sample = y, color = threeG_df$performanceLvl)) +
-  labs(title="Performance Level vs Energy Efficiency(3G)", x="Performance Score",  y = "Energy Efficiency (Joules)", color = "Performance Level")+
+  labs(title="Performance Score vs Energy Efficiency(3G)", x="Performance Score",  y = "Energy Efficiency (Joules)", color = "Performance Level")+
   geom_point()
 ```
 
